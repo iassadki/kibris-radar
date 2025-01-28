@@ -36,7 +36,7 @@ const HomeScreenNavigator = () => {
         component={RadarScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="magnify" color={color} size={size} />
+            <MaterialCommunityIcons name="radar" color={color} size={size} />
           ),
           headerShown: false,
         }}
@@ -46,7 +46,7 @@ const HomeScreenNavigator = () => {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="heart" color={color} size={size} />
+            <MaterialCommunityIcons name="account" color={color} size={size} />
           ),
           headerShown: false,
         }}
