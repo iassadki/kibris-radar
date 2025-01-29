@@ -12,13 +12,13 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const HomeScreenNavigator = () => {
-
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: 'white',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: { backgroundColor: '#000', borderTopWidth: 0 },
+        headerShown: false, // Désactive le header dans le Tab.Navigator
       }}
     >
       <Tab.Screen
@@ -28,7 +28,6 @@ const HomeScreenNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -38,7 +37,6 @@ const HomeScreenNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="radar" color={color} size={size} />
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -48,7 +46,6 @@ const HomeScreenNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account" color={color} size={size} />
           ),
-          headerShown: false,
         }}
       />
     </Tab.Navigator>
@@ -57,34 +54,24 @@ const HomeScreenNavigator = () => {
 
 export default function App() {
   return (
-      <SafeAreaView style={styles.safeArea}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="HomeScreen" // Changer le nom de l'écran initial si nécessaire
-            screenOptions={{
-              headerShown: false, // Cacher l'en-tête pour tous les écrans par défaut
-              headerStyle: { backgroundColor: '#fff' },
-              headerTintColor: '#000',
-            }}
-          >
-            <Stack.Screen
-              name="HomeScreen" // Renommer l'écran "Home" en "HomeScreen"
-              component={HomeScreenNavigator}
-            />
-            <Stack.Screen
-              name="RadarScreen"
-              component={RadarScreen}
-              options={{ headerShown: false }} // Cacher l'en-tête pour l'écran RadarScreen
-            />
-            <Stack.Screen
-              name="ProfileScreen"
-              component={ProfileScreen}
-              options={{ headerShown: false }} // Cacher l'en-tête pour l'écran ProfileScreen
-            />
-          </Stack.Navigator>
-
-        </NavigationContainer>
-      </SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="HomeScreen"
+          screenOptions={{
+            headerStyle: { backgroundColor: '#000' },
+            headerTintColor: '#fff',
+            headerTitleAlign: 'center',
+          }}
+        >
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreenNavigator}
+            options={{ title: "Kibris Radar" }} // Ajout du titre dans le header
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
 
