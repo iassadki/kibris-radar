@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import HomeScreen from './screens/HomeScreen.js';
+import LoginScreen from './screens/LoginScreen.js';
 import ProfileScreen from './screens/ProfileScreen.js';
 import RadarScreen from './screens/RadarScreen.js';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import client from './services/mqtt_service.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,9 +20,18 @@ const HomeScreenNavigator = () => {
         tabBarActiveTintColor: 'white',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: { backgroundColor: '#000', borderTopWidth: 0 },
-        headerShown: false, // Désactive le header dans le Tab.Navigator
+        headerShown: false,
       }}
     >
+      <Tab.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="login" color={color} size={size} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -53,6 +64,12 @@ const HomeScreenNavigator = () => {
 };
 
 export default function App() {
+  useEffect(() => {
+    if (client.isConnected()) {
+      console.log("MQTT est prêt !");
+    }
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <NavigationContainer>
@@ -67,7 +84,7 @@ export default function App() {
           <Stack.Screen
             name="HomeScreen"
             component={HomeScreenNavigator}
-            options={{ title: "Kibris Radar" }} // Ajout du titre dans le header
+            options={{ title: "Kıbrıs Radar" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
