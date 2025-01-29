@@ -16,6 +16,7 @@
     "mqtt": "^5.10.3",
     "react": "18.3.1",
     "react-native": "0.76.6",
+    "serialport": "^13.0.0",
     "xbee-api": "^0.6.0"
   },
   "devDependencies": {
