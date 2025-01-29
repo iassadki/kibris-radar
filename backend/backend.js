@@ -17,13 +17,10 @@ var xbeeAPI = new xbee_api.XBeeAPI({
   api_mode: 1
 });
 
-let serialport = new SerialPort(SERIAL_PORT, {
-  baudRate: parseInt(process.env.SERIAL_BAUDRATE) || 9600,
-}, function (err) {
-  if (err) {
-    return console.log('Creating SerialPort', err.message)
-  }
-});
+let serialport = new SerialPort({
+    path:SERIAL_PORT,
+    baudRate:parseInt(process.env.SERIAL_BAUDRATE) || 9600,
+  });
 
 serialport.pipe(xbeeAPI.parser);
 xbeeAPI.builder.pipe(serialport);
