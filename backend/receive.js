@@ -4,7 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Configuration de l'état MQTT
 export const mqttState = {
     status: 'disconnected',
-    lastMessage: ''
+    lastMessage: '',
+    frontDistance: '',
+    backDistance: '',
+    pression: ''
 };
 
 // Initialisation MQTT
@@ -68,14 +71,30 @@ function onConnectionLost(responseObject) {
 }
 
 // Gestionnaire de réception de messages
+// Gestionnaire de réception de messages
 function onMessageArrived(message) {
     mqttState.lastMessage = message.payloadString;
-    console.log("Message reçu:", mqttState.lastMessage);
+    // console.log("Message reçu:", mqttState.lastMessage);
+
+    // Supposons que les chiffres sont séparés par des espaces ou des nouvelles lignes
+    const [frontDistance, backDistance, pression] = mqttState.lastMessage.split(/\s+/);
+
+    mqttState.frontDistance = frontDistance;
+    mqttState.backDistance = backDistance;
+    mqttState.pression = pression;
+
+    console.log(' ');
+    console.log("frontDistance:", frontDistance);
+    console.log("backDistance:", backDistance);
+    console.log("pression:", pression);
+    console.log(' ');
 
     AsyncStorage.setItem('mqtt_message', mqttState.lastMessage)
-        .then(() => console.log('Message stocké dans AsyncStorage'))
+        // .then(() => console.log('Message stocké dans AsyncStorage'))
         .catch(error => console.error('Erreur de stockage:', error));
 }
+
+// Attribution des gestionnaires d'événements
 
 // Attribution des gestionnaires d'événements
 client.onConnectionLost = onConnectionLost;

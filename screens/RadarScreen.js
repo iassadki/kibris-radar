@@ -9,6 +9,9 @@ const RadarScreen = () => {
     const size = 100;
 
     const [status, setStatus] = useState('');
+    const [frontDistance, setFrontDistance] = useState('');
+    const [backDistance, setBackDistance] = useState('');
+    const [pression, setPression] = useState('');
 
     useEffect(() => {
         if (client === 'connected') {
@@ -17,6 +20,16 @@ const RadarScreen = () => {
             setStatus('MQTT is not ready !');
         }
     }, [status]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFrontDistance(mqttState.frontDistance);
+            setBackDistance(mqttState.backDistance);
+            setPression(mqttState.pression);
+        }, 1000); // Mettre à jour toutes les secondes
+
+        return () => clearInterval(interval); // Nettoyer l'intervalle à la fin
+    }, [mqttState.lastMessage]);
 
     const [clignotant, setClignotant] = useState('off');
 
@@ -29,33 +42,15 @@ const RadarScreen = () => {
         setClignotant(clignotant === 'right' ? 'off' : 'right');
         console.log('Clignotant droit');
     };
-
+    
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
 
-    const [frontDistance, setFrontDistance] = useState('');
-    const [backDistance, setBackDistance] = useState('');
 
-    // Fonction pour déterminer la couleur de fond basée sur la distance
+
     const getBackgroundColor = () => {
-        // On vérifie les distances avant et arrière et on retourne la couleur appropriée
-        const front = frontDistancesList;
-        const back = backDistancesList;
+    // Fonction pour déterminer la couleur de fond basée sur la distance
 
-        // On compare les distances. On doit retrouver la plus faible distance entre frontDistanceList et backDistanceList
-        const minFront = Math.min(...front);
-        const minBack = Math.min(...back);
-
-        // On retourne la couleur en fonction de la distance minimale
-        if (minFront <= 5 || minBack <= 5) {
-            return 'red';
-        } else if (minFront <= 15 || minBack <= 15) {
-            return 'orange';
-        } else if (minFront <= 30 || minBack <= 30) {
-            return 'green';
-        } else {
-            return 'white';
-        }
     };
 
     return (
@@ -87,9 +82,9 @@ const RadarScreen = () => {
                 </View>
             </View>
             <Text style={styles.pageTitle}>Distance obstacle avant</Text>
-            <Text style={styles.text}>{frontDistancesList[3]} cm</Text>
+            <Text style={styles.text}>{mqttState.frontDistance} cm</Text>
             <Text style={styles.pageTitle}>Distance obstacle arrière</Text>
-            <Text style={styles.text}>{backDistancesList[2]} cm</Text>
+            <Text style={styles.text}>{mqttState.backDistance} cm</Text>
         </View>
     );
 };
