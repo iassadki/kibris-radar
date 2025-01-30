@@ -1,26 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Button from '../components/Button.js';
+import client, { mqttState } from '../services/mqtt_service.js';
 
 const RadarScreen = () => {
     const color = 'black';
     const size = 100; // Augmenter la taille des flèches
 
+    const [status, setStatus] = useState('');
+
+    useEffect(() => {
+        if (client === 'connected') {
+            setStatus('MQTT is ready !');
+        } else if (client === 'disconnected') {
+            setStatus('MQTT is not ready !');
+        }
+    }, [status]);
+
     return (
         <View style={styles.container}>
+            <Button title={`MQTT is ${mqttState.status}`} />
+
             <Text style={styles.pageTitle}>Clignotants</Text>
             <View style={styles.arrowsContainer}>
-                <MaterialCommunityIcons name="arrow-left-circle" color={color} size={size} style={styles.arrowLeft} />
-                <MaterialCommunityIcons name="arrow-right-circle" color={color} size={size} style={styles.arrowRight} />
+                <View style={styles.column}>
+                    <MaterialCommunityIcons name="arrow-left-circle" color={color} size={size} style={styles.arrowLeft} />
+                </View>
+                <View style={styles.column} />
+                <View style={styles.column}>
+                    <MaterialCommunityIcons name="arrow-right-circle" color={color} size={size} style={styles.arrowRight} />
+                </View>
             </View>
-            <View style={styles.distanceContainer}>
+            {/* <View style={styles.distanceContainer}> */}
                 <Text style={styles.pageTitle}>Distance obstacle avant</Text>
                 <Text style={styles.text}>0 cm</Text>
-            </View>
-            <View style={styles.distanceContainer}>
-                <Text style={styles.pageTitle}>Distance obstacle arriere</Text>
+            {/* </View> */}
+            {/* <View style={styles.distanceContainer}> */}
+                <Text style={styles.pageTitle}>Distance obstacle arrière</Text>
                 <Text style={styles.text}>0 cm</Text>
-            </View>
+            {/* </View> */}
         </View>
     );
 };
@@ -30,42 +49,63 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFFFF',
         padding: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
+    // pageTitle: {
+    //     marginTop: 20, // Réduire la marge supérieure pour rapprocher le titre des clignotants
+    //     marginLeft: 10,
+    //     fontSize: 25,
+    //     fontWeight: 'bold',
+    //     marginVertical: 5, // Réduire la marge verticale
+    //     color: 'black',
+    //     textAlign: 'center',
+    // },
+
     pageTitle: {
-        marginTop: 20, // Réduire la marge supérieure pour rapprocher le titre des clignotants
+        marginTop: 40,
         marginLeft: 10,
         fontSize: 25,
         fontWeight: 'bold',
-        marginVertical: 5, // Réduire la marge verticale
+        marginVertical: 10,
         color: 'black',
-        textAlign: 'center',
     },
+
+    // text: {
+    //     marginLeft: 10,
+    //     fontSize: 20,
+    //     fontWeight: 'bold',
+    //     marginVertical: 10,
+    //     color: 'black',
+    //     textAlign: 'center',
+    // },
+
     text: {
         marginLeft: 10,
-        fontSize: 20,
+        fontSize: 50,
         fontWeight: 'bold',
         marginVertical: 10,
         color: 'black',
-        textAlign: 'center',
     },
+
     arrowsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        width: '80%', // Ajuster la largeur pour centrer les flèches
+        width: '100%', // Ajuster la largeur pour centrer les flèches
         marginVertical: 20, // Ajouter une marge verticale pour espacer les sections
+    },
+    column: {
+        flex: 1,
+        alignItems: 'center',
     },
     distanceContainer: {
         alignItems: 'center',
         marginVertical: 30, // Ajouter une marge verticale pour espacer les sections
     },
     arrowLeft: {
-        marginHorizontal: 10, // Ajuster l'écart entre les flèches
+        marginLeft: 20, // Aligner à gauche
     },
     arrowRight: {
-        marginHorizontal: 10, // Ajuster l'écart entre les flèches
+        marginRight: 20, // Aligner à droite
     },
 });
 

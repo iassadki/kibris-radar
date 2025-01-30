@@ -17,9 +17,24 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             <Button title={`MQTT is ${mqttState.status}`} />
-            {/* <Text style={styles.pageTitle}>MQTT TEST</Text> */}
-            {/* <Text style={styles.text}>MQTT is {mqttState.status}</Text> */}
-            {/* <Text style={styles.text}>{mqttState.lastMessage}</Text> */}
+            <Text style={styles.pageTitle}>Fauteils disponibles</Text>
+            <View style={styles.squareContainer}>
+                <View style={styles.square}>
+                    <Text style={styles.squareText}>Disponible 1</Text>
+                </View>
+                <View style={styles.square}>
+                    <Text style={styles.squareText}>Disponible 2</Text>
+                </View>
+            </View>
+            <Text style={styles.pageTitle}>Fauteils pris</Text>
+            <View style={styles.squareContainer}>
+                <View style={styles.square}>
+                    <Text style={styles.squareText}>Pris 1</Text>
+                </View>
+                <View style={styles.square}>
+                    <Text style={styles.squareText}>Pris 2</Text>
+                </View>
+            </View>
         </View>
     );
 };
@@ -39,12 +54,29 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     text: {
-        // marginTop: 40,
         marginLeft: 10,
         fontSize: 20,
         fontWeight: 'bold',
         marginVertical: 10,
         color: 'black',
+    },
+    squareContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        marginVertical: 10,
+        marginLeft: 10,
+    },
+    square: {
+        width: 100,
+        height: 100,
+        backgroundColor: 'grey',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    squareText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
 
