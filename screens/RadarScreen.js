@@ -42,15 +42,23 @@ const RadarScreen = () => {
         setClignotant(clignotant === 'right' ? 'off' : 'right');
         console.log('Clignotant droit');
     };
-    
+
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
 
 
 
     const getBackgroundColor = () => {
-    // Fonction pour déterminer la couleur de fond basée sur la distance
-
+        // Fonction pour déterminer la couleur de fond (container) basée sur la distance
+        if (mqttState.frontDistance < 5 || mqttState.backDistance < 5) {
+            return 'red';
+        } else if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
+            return 'orange';
+        } else if (mqttState.frontDistance < 30 || mqttState.backDistance < 30) {
+            return 'yellow';
+        } else {
+            return 'green';
+        }
     };
 
     return (
