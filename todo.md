@@ -1,8 +1,2 @@
-- [x] Formulaire de connexion
-- [ ] affichage distance 
-(fond qui change selon la distance)
-- vert
-- orange
-- rouge
-
-- [ ] clignotants
+- [ ] Afficher les valeurs de Async Storage vers le composant
+- [ ] Bruits clignotants, et animations

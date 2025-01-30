@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import client, { mqttState } from '../services/mqtt_service.js';
+import client, { mqttState } from '../backend/receive.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button.js';
 

@@ -8,7 +8,7 @@ import LoginScreen from './screens/LoginScreen.js';
 import ProfileScreen from './screens/ProfileScreen.js';
 import RadarScreen from './screens/RadarScreen.js';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import client from './services/mqtt_service.js';
+import client from './backend/receive.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
