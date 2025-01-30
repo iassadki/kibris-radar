@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import client, { mqttState } from '../services/mqtt_service.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button.js';
 
 const HomeScreen = () => {
     const [status, setStatus] = useState('');
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         if (client === 'connected') {
@@ -14,27 +16,53 @@ const HomeScreen = () => {
         }
     }, [status]);
 
+    useEffect(() => {
+        const getUser = async () => {
+            const storedUser = await AsyncStorage.getItem('loggedInUser');
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+        };
+        getUser();
+    }, []);
+
+    // Render only if user is available
+    if (!user) {
+        return (
+            <View style={styles.container}>
+                <Text>Loading user...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <Button title={`MQTT is ${mqttState.status}`} />
-            <Text style={styles.pageTitle}>Fauteils disponibles</Text>
+            <Text style={styles.pageTitle}>{`Bienvenue ${user.username}, ${user.role}`}</Text>
+
+            <Text style={styles.pageTitle}>Fauteuils disponibles</Text>
             <View style={styles.squareContainer}>
                 <View style={styles.square}>
-                    <Text style={styles.squareText}>Disponible 1</Text>
+                    <Text style={styles.squareText}>ID</Text>
                 </View>
                 <View style={styles.square}>
-                    <Text style={styles.squareText}>Disponible 2</Text>
+                    <Text style={styles.squareText}>ID</Text>
                 </View>
             </View>
-            <Text style={styles.pageTitle}>Fauteils pris</Text>
-            <View style={styles.squareContainer}>
-                <View style={styles.square}>
-                    <Text style={styles.squareText}>Pris 1</Text>
-                </View>
-                <View style={styles.square}>
-                    <Text style={styles.squareText}>Pris 2</Text>
-                </View>
-            </View>
+
+            {user?.role === "gerant" && (
+                <>
+                    <Text style={styles.pageTitle}>Fauteuils pris</Text>
+                    <View style={styles.squareContainer}>
+                        <View style={styles.square}>
+                            <Text style={styles.squareText}>ID</Text>
+                        </View>
+                        <View style={styles.square}>
+                            <Text style={styles.squareText}>ID</Text>
+                        </View>
+                    </View>
+                </>
+            )}
         </View>
     );
 };
@@ -69,6 +97,7 @@ const styles = StyleSheet.create({
     square: {
         width: 100,
         height: 100,
+        borderRadius: 5,
         backgroundColor: 'grey',
         justifyContent: 'center',
         alignItems: 'center',

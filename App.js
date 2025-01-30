@@ -13,7 +13,7 @@ import client from './services/mqtt_service.js';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const HomeScreenNavigator = () => {
+const MainNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -23,15 +23,6 @@ const HomeScreenNavigator = () => {
         headerShown: false,
       }}
     >
-      <Tab.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="login" color={color} size={size} />
-          ),
-        }}
-      />
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -74,7 +65,7 @@ export default function App() {
     <SafeAreaView style={styles.safeArea}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="Login"
           screenOptions={{
             headerStyle: { backgroundColor: '#000' },
             headerTintColor: '#fff',
@@ -82,9 +73,17 @@ export default function App() {
           }}
         >
           <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreenNavigator}
-            options={{ title: "Kıbrıs Radar" }}
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={MainNavigator}
+            options={{
+              title: "Kıbrıs Radar",
+              headerLeft: null // Empêche le retour à la page login
+            }}
           />
         </Stack.Navigator>
       </NavigationContainer>

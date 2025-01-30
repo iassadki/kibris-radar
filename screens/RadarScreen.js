@@ -6,7 +6,7 @@ import client, { mqttState } from '../services/mqtt_service.js';
 
 const RadarScreen = () => {
     const color = 'black';
-    const size = 100; // Augmenter la taille des flèches
+    const size = 100;
 
     const [status, setStatus] = useState('');
 
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         padding: 10,
     },
+
     // pageTitle: {
     //     marginTop: 20, // Réduire la marge supérieure pour rapprocher le titre des clignotants
     //     marginLeft: 10,
@@ -85,7 +86,6 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         color: 'black',
     },
-
     arrowsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
