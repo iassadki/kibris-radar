@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Audio } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Button from '../components/Button.js';
 import client, { mqttState } from '../backend/receive.js';
@@ -8,11 +8,13 @@ const RadarScreen = () => {
     const color = 'black';
     const size = 100;
 
+    // Récupérations de valeurs depuis le backend
     const [status, setStatus] = useState('');
     const [frontDistance, setFrontDistance] = useState('');
     const [backDistance, setBackDistance] = useState('');
     const [pression, setPression] = useState('');
 
+    // Statut de la connexion MQTT
     useEffect(() => {
         if (client === 'connected') {
             setStatus('MQTT is ready !');
@@ -21,6 +23,7 @@ const RadarScreen = () => {
         }
     }, [status]);
 
+    // Distances
     useEffect(() => {
         const interval = setInterval(() => {
             setFrontDistance(mqttState.frontDistance);
@@ -31,6 +34,7 @@ const RadarScreen = () => {
         return () => clearInterval(interval); // Nettoyer l'intervalle à la fin
     }, [mqttState.lastMessage]);
 
+    // Clignotants
     const [clignotant, setClignotant] = useState('off');
 
     const onLeftPress = () => {
@@ -46,8 +50,7 @@ const RadarScreen = () => {
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
 
-
-
+    // Changement de couleur de fond basé sur la distance
     const getBackgroundColor = () => {
         // Fonction pour déterminer la couleur de fond (container) basée sur la distance
         if (mqttState.frontDistance < 5 || mqttState.backDistance < 5) {
@@ -60,6 +63,22 @@ const RadarScreen = () => {
             return 'green';
         }
     };
+
+    // Lancement d'un audio si la distance est inférieur ou égal à 15 cm
+    useEffect(() => {
+        const playSound = async () => {
+            if (mqttState.frontDistance <= 15 || mqttState.backDistance <= 15) {
+                console.log('Audio alerte');
+                const { sound } = await Audio.Sound.createAsync(
+                    require('../assets/audios/IshakLong.wav'),
+                    { shouldPlay: true }
+                );
+                await sound.playAsync();
+            }
+        };
+
+        playSound();
+    }, [mqttState.frontDistance, mqttState.backDistance]);
 
     return (
         <View style={[styles.container, { backgroundColor: getBackgroundColor() }]}>

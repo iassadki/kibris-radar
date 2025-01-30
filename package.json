@@ -29,7 +29,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-vector-icons": "^10.2.0",
     "serialport": "^13.0.0",
-    "xbee-api": "^0.6.0"
+    "xbee-api": "^0.6.0",
+    "expo-av": "~15.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
