@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Audio } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Button from '../components/Button.js';
 import client, { mqttState } from '../backend/receive.js';
+import { Audio } from 'expo-av';
+
 
 const RadarScreen = () => {
     const color = 'black';
@@ -13,6 +15,9 @@ const RadarScreen = () => {
     const [frontDistance, setFrontDistance] = useState('');
     const [backDistance, setBackDistance] = useState('');
     const [pression, setPression] = useState('');
+    const soundRef = useRef(null); // Référence pour stocker l'objet son
+    const [currentRate, setCurrentRate] = useState(1); // État pour suivre la vitesse actuelle du son
+
 
     // Statut de la connexion MQTT
     useEffect(() => {
@@ -23,30 +28,108 @@ const RadarScreen = () => {
         }
     }, [status]);
 
-    // Distances
+    // Gestion du son en fonction de la distance
     useEffect(() => {
-        const interval = setInterval(() => {
-            setFrontDistance(mqttState.frontDistance);
-            setBackDistance(mqttState.backDistance);
-            setPression(mqttState.pression);
-        }, 1000); // Mettre à jour toutes les secondes
+        const playSound = async (rate) => {
+            try {
+                if (!soundRef.current) {
+                    const { sound } = await Audio.Sound.createAsync(
+                        require('../assets/audios/IshakLong.wav'),
+                        { isLooping: true }
+                    );
+                    soundRef.current = sound;
+                    await sound.setRateAsync(rate, true);
+                    await sound.playAsync();
+                } else {
+                    if (currentRate !== rate) {
+                        await soundRef.current.setRateAsync(rate, true);
+                        setCurrentRate(rate);
+                    }
+                }
+            } catch (error) {
+                console.error("Erreur de lecture audio:", error);
+            }
+        };
 
-        return () => clearInterval(interval); // Nettoyer l'intervalle à la fin
-    }, [mqttState.lastMessage]);
+        if (mqttState.frontDistance < 5 || mqttState.backDistance < 5) {
+            playSound(2); // Jouer en accéléré si distance < 5 cm
+        } else if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
+            playSound(1); // Jouer normalement si distance entre 5 et 15 cm
+        } else {
+            if (soundRef.current) {
+                soundRef.current.stopAsync();
+                soundRef.current.unloadAsync();
+                soundRef.current = null;
+            }
+        }
+
+        return () => {
+            if (soundRef.current) {
+                soundRef.current.stopAsync();
+                soundRef.current.unloadAsync();
+                soundRef.current = null;
+            }
+        };
+    }, [mqttState.frontDistance, mqttState.backDistance]);
+
+    // Pour la pression
+    useEffect(() => {
+        if (pression > 0) {
+            console.log("La fauteuil est pris")
+        } else if (pression <= 0) {
+            console.log("La fauteuil est de nouveau disponible")
+        }
+    }, [pression]);
+
 
     // Clignotants
-    const [clignotant, setClignotant] = useState('off');
+    const [clignotantDroit, setClignotantDroit] = useState(false);
+    const [clignotantGauche, setClignotantGauche] = useState(false);
+    const [isBlinking, setIsBlinking] = useState(false);
 
+    // 
     const onLeftPress = () => {
-        setClignotant(clignotant === 'left' ? 'off' : 'left');
-        console.log('Clignotant gauche');
+        setClignotantDroit(false); // Désactive le droit si actif
+        setClignotantGauche(!clignotantGauche); // Toggle le gauche
+        console.log('Clignotant gauche:', !clignotantGauche ? 'activé' : 'désactivé');
     };
 
     const onRightPress = () => {
-        setClignotant(clignotant === 'right' ? 'off' : 'right');
-        console.log('Clignotant droit');
+        setClignotantGauche(false); // Désactive le gauche si actif
+        setClignotantDroit(!clignotantDroit); // Toggle le droit
+        console.log('Clignotant droit:', !clignotantDroit ? 'activé' : 'désactivé');
     };
 
+    // Lancement du bruit lors du clic du clignotant droit
+    useEffect(() => {
+        let interval;
+        if (clignotantDroit || clignotantGauche) {
+            interval = setInterval(() => {
+                setIsBlinking(prev => !prev);
+            }, 500);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+            setIsBlinking(false);
+        };
+    }, [clignotantDroit, clignotantGauche]);
+
+    const getArrowColor = (side) => {
+        if ((side === 'left' && clignotantGauche) || (side === 'right' && clignotantDroit)) {
+            return isBlinking ? '#004d00' : '#00ff00'; // Vert foncé / Vert clair
+        }
+        return 'black';
+    };
+
+    useEffect(() => {
+        if (pression > 0) {
+            console.log("La fauteuil est pris")
+        } else if (pression <= 0) {
+            console.log("La fauteuil est de nouveau disponible")
+        }
+    }, [pression]);
+
+    
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
 
@@ -64,22 +147,6 @@ const RadarScreen = () => {
         }
     };
 
-    // Lancement d'un audio si la distance est inférieur ou égal à 15 cm
-    useEffect(() => {
-        const playSound = async () => {
-            if (mqttState.frontDistance <= 15 || mqttState.backDistance <= 15) {
-                console.log('Audio alerte');
-                const { sound } = await Audio.Sound.createAsync(
-                    require('../assets/audios/IshakLong.wav'),
-                    { shouldPlay: true }
-                );
-                await sound.playAsync();
-            }
-        };
-
-        playSound();
-    }, [mqttState.frontDistance, mqttState.backDistance]);
-
     return (
         <View style={[styles.container, { backgroundColor: getBackgroundColor() }]}>
             <Button title={`MQTT is ${mqttState.status}`} />
@@ -90,7 +157,7 @@ const RadarScreen = () => {
                     <TouchableOpacity onPress={onLeftPress}>
                         <MaterialCommunityIcons
                             name="arrow-left-circle"
-                            color={color}
+                            color={getArrowColor('left')}
                             size={size}
                             style={styles.arrowLeft}
                         />
@@ -101,7 +168,7 @@ const RadarScreen = () => {
                     <TouchableOpacity onPress={onRightPress}>
                         <MaterialCommunityIcons
                             name="arrow-right-circle"
-                            color={color}
+                            color={getArrowColor('right')}
                             size={size}
                             style={styles.arrowRight}
                         />
@@ -151,9 +218,11 @@ const styles = StyleSheet.create({
     },
     arrowLeft: {
         marginLeft: 20,
+        color: "black",
     },
     arrowRight: {
         marginRight: 20,
+        color: "black",
     },
 });
 
