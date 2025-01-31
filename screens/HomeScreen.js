@@ -91,7 +91,7 @@ const HomeScreen = () => {
                         {wheelchair.filter(wheelchair => wheelchair.status === 'unavailable').length > 0 ? (
                             wheelchair.filter(wheelchair => wheelchair.status === 'unavailable').map((wheelchair, index) => (
                                 <View style={styles.square} key={index}>
-                                    <Text style={styles.squareText}>{`ID ${wheelchair.id}`}</Text>
+                                    <Text style={styles.squareText}>{`Wheelchair ${wheelchair.id}`}</Text>
                                     {/* <Text style={styles.squareText}>{`Pres. ${wheelchair.pression}`}</Text> */}
                                     {/* <Text style={styles.squareText}>{`${wheelchair.status}`}</Text> */}
                                 </View>
