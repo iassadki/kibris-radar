@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Button from '../components/Button.js';
-import client, { mqttState } from '../backend/receive.js';
+import client, { mqttState } from '../../backend/receive.js';
 import { Audio } from 'expo-av';
 
 
