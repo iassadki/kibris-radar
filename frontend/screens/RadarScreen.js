@@ -50,9 +50,9 @@ const RadarScreen = () => {
             }
         };
 
-        if (mqttState.frontDistance < 3 || mqttState.backDistance < 3) {
+        if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
             playSound(2); // Jouer en accéléré si distance < 5 cm
-        } else if (mqttState.frontDistance < 8 || mqttState.backDistance < 8) {
+        } else if (mqttState.frontDistance < 30 || mqttState.backDistance < 30) {
             playSound(1); // Jouer normalement si distance entre 5 et 15 cm
         } else {
             if (soundRefDistance.current) {
@@ -151,11 +151,11 @@ const RadarScreen = () => {
     // Changement de couleur de fond basé sur la distance
     const getBackgroundColor = () => {
         // Fonction pour déterminer la couleur de fond (container) basée sur la distance
-        if (mqttState.frontDistance < 5 || mqttState.backDistance < 5) {
+        if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
             return 'red';
-        } else if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
-            return 'orange';
         } else if (mqttState.frontDistance < 30 || mqttState.backDistance < 30) {
+            return 'orange';
+        } else if (mqttState.frontDistance < 50 || mqttState.backDistance < 50) {
             return 'yellow';
         } else {
             return 'green';
