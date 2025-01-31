@@ -3,10 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import HomeScreen from './screens/HomeScreen.js';
-import LoginScreen from './screens/LoginScreen.js';
-import ProfileScreen from './screens/ProfileScreen.js';
-import RadarScreen from './screens/RadarScreen.js';
+import HomeScreen from './frontend/screens/HomeScreen.js';
+import LoginScreen from './frontend/screens/LoginScreen.js';
+import ProfileScreen from './frontend/screens/ProfileScreen.js';
+import RadarScreen from './frontend/screens/RadarScreen.js';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import client from './backend/receive.js';
 

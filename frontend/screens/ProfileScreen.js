@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Button from '../components/Button.js';
-import client, { mqttState } from '../backend/receive.js';
+import client, { mqttState } from '../../backend/receive.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = ({ navigation }) => {
@@ -46,13 +46,15 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.pageTitle}>{`Bienvenue ${user.username}, ${user.role}`}</Text>
 
                 {user?.role === "gerant" ? (
-                    <Text style={styles.text}>{`${user.username} s'est pris un obstacle à HEURE`}</Text>
+                    <Text style={styles.text}>Yanis s'est pris un obstacle à HEURE</Text>
                 ) : user?.role === "patient" ? (
                     <View style={styles.squareContainer}>
-                        <View style={styles.square}>
-                            <Text style={styles.squareText}>Fauteuils disponibles</Text>
-                            {/* <Image source={require('../assets/fauteuil.svg')} /> */}
-                        </View>
+                            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                                <View style={styles.square}>
+                                    <Text style={styles.squareText}>Fauteuils disponibles</Text>
+                                    {/* <Image source={require('../assets/fauteuil.svg')} /> */}
+                                </View>
+                            </TouchableOpacity>
                     </View>
                 ) : (
                     <>

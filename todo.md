@@ -1,4 +1,0 @@
-- [x] Afficher les valeurs de Async Storage vers le composant
-- [ ] Bruit selon distance
-- [ ] Bruits clignotants, et animations
-- [ ] Fauteuils disponibles
