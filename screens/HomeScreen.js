@@ -7,6 +7,7 @@ import Button from '../components/Button.js';
 const HomeScreen = () => {
     const [status, setStatus] = useState('');
     const [user, setUser] = useState(null);
+    const [pression, setPression] = useState(0); // Initialisez la pression avec une valeur par défaut
 
     useEffect(() => {
         if (client === 'connected') {
@@ -26,6 +27,27 @@ const HomeScreen = () => {
         getUser();
     }, []);
 
+    // Effet pour afficher la valeur de pression dans la console
+    useEffect(() => {
+        console.log('mqttState:', mqttState);  // Log la structure de mqttState
+        if (mqttState && mqttState.pression !== undefined) {
+            setPression(mqttState.pression);
+            console.log('PRESSION HOMESCREEN:', mqttState.pression);
+        }
+    }, [mqttState]);
+
+    // Vérification toutes les 0.5 secondes
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (mqttState && mqttState.pression !== undefined) {
+                setPression(mqttState.pression);
+                console.log('Updated PRESSURE:', mqttState.pression);
+            }
+        }, 500); // 500 ms = 0.5 secondes
+
+        return () => clearInterval(interval); // Nettoyage de l'intervalle à la destruction du composant
+    }, [mqttState]);
+
     // Render only if user is available
     if (!user) {
         return (
@@ -35,6 +57,11 @@ const HomeScreen = () => {
         );
     }
 
+    // Liste de deux fauteuils avec un status (disponible ou pris)
+    const wheelchair = [
+        { id: 1, status: pression > 0 ? 'unavailable' : 'available', pression },
+    ];
+
     return (
         <View style={styles.container}>
             <Button title={`MQTT is ${mqttState.status}`} />
@@ -42,24 +69,38 @@ const HomeScreen = () => {
 
             <Text style={styles.pageTitle}>Fauteuils disponibles</Text>
             <View style={styles.squareContainer}>
-                <View style={styles.square}>
-                    <Text style={styles.squareText}>ID</Text>
-                </View>
-                <View style={styles.square}>
-                    <Text style={styles.squareText}>ID</Text>
-                </View>
+                {wheelchair.filter(wheelchair => wheelchair.status === 'available').length > 0 ? (
+                    wheelchair.filter(wheelchair => wheelchair.status === 'available').map((wheelchair, index) => (
+                        <View style={styles.square} key={index}>
+                            <Text style={styles.squareText}>{`Wheelchair ${wheelchair.id}`}</Text>
+                            {/* <Text style={styles.squareText}>{`Pres. ${wheelchair.pression}`}</Text> */}
+                            {/* <Text style={styles.squareText}>{`${wheelchair.status}`}</Text> */}
+                        </View>
+                    ))
+                ) : (
+                    <View style={styles.rectangleFullWidth}>
+                        <Text style={styles.squareText}>Pas de fauteuil pris</Text>
+                    </View>
+                )}
             </View>
 
             {user?.role === "gerant" && (
                 <>
                     <Text style={styles.pageTitle}>Fauteuils pris</Text>
                     <View style={styles.squareContainer}>
-                        <View style={styles.square}>
-                            <Text style={styles.squareText}>ID</Text>
-                        </View>
-                        <View style={styles.square}>
-                            <Text style={styles.squareText}>ID</Text>
-                        </View>
+                        {wheelchair.filter(wheelchair => wheelchair.status === 'unavailable').length > 0 ? (
+                            wheelchair.filter(wheelchair => wheelchair.status === 'unavailable').map((wheelchair, index) => (
+                                <View style={styles.square} key={index}>
+                                    <Text style={styles.squareText}>{`ID ${wheelchair.id}`}</Text>
+                                    {/* <Text style={styles.squareText}>{`Pres. ${wheelchair.pression}`}</Text> */}
+                                    {/* <Text style={styles.squareText}>{`${wheelchair.status}`}</Text> */}
+                                </View>
+                            ))
+                        ) : (
+                            <View style={styles.rectangleFullWidth}>
+                                <Text style={styles.squareText}>Pas de fauteuil pris</Text>
+                            </View>
+                        )}
                     </View>
                 </>
             )}
@@ -93,6 +134,14 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         marginVertical: 10,
         marginLeft: 10,
+    },
+    rectangleFullWidth: {
+        width: '100%',
+        height: 100,
+        borderRadius: 5,
+        backgroundColor: 'grey',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     square: {
         width: 100,

@@ -72,16 +72,6 @@ const RadarScreen = () => {
         };
     }, [mqttState.frontDistance, mqttState.backDistance]);
 
-    // Pour la pression
-    useEffect(() => {
-        if (pression > 0) {
-            console.log("La fauteuil est pris")
-        } else if (pression <= 0) {
-            console.log("La fauteuil est de nouveau disponible")
-        }
-    }, [pression]);
-
-
     // Clignotants
     const [clignotantDroit, setClignotantDroit] = useState(false);
     const [clignotantGauche, setClignotantGauche] = useState(false);
@@ -163,15 +153,6 @@ const RadarScreen = () => {
     //     }
     //     return 'black';
     // };
-
-    useEffect(() => {
-        if (pression > 0) {
-            console.log("La fauteuil est pris")
-        } else if (pression <= 0) {
-            console.log("La fauteuil est de nouveau disponible")
-        }
-    }, [pression]);
-
 
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
