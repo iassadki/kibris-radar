@@ -1,7 +1,7 @@
 - [x] Afficher les valeurs de Async Storage vers le composant
 - [x] Bruit selon distance
 - [x] Bruit des clignotants en console
-- [ ] Bruit des clignotants en audio
+- [x] Bruit des clignotants en audio
 - [ ] Gérer une array de un seul fauteuil pour l'instant
 - [ ] Bruits clignotants, et animations
 - [ ] Gérer les listes de fauteuils, avec les deux capteurs de pression différents

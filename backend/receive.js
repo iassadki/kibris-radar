@@ -43,7 +43,7 @@ function onConnect() {
     console.log("Connecté au broker MQTT");
 
     // Souscription au topic
-    client.subscribe("13a20041642063", {
+    client.subscribe("13a20041642063/data", {
         qos: 0,
         onSuccess: () => console.log("Souscription réussie"),
         onFailure: (error) => console.error("Erreur de souscription:", error)

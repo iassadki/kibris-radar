@@ -15,7 +15,7 @@ const RadarScreen = () => {
     const [frontDistance, setFrontDistance] = useState('');
     const [backDistance, setBackDistance] = useState('');
     const [pression, setPression] = useState('');
-    const soundRef = useRef(null); // Référence pour stocker l'objet son
+    const soundRefDistance = useRef(null); // Référence pour stocker l'objet son
     const [currentRate, setCurrentRate] = useState(1); // État pour suivre la vitesse actuelle du son
 
 
@@ -32,17 +32,17 @@ const RadarScreen = () => {
     useEffect(() => {
         const playSound = async (rate) => {
             try {
-                if (!soundRef.current) {
+                if (!soundRefDistance.current) {
                     const { sound } = await Audio.Sound.createAsync(
-                        require('../assets/audios/IshakLong.wav'),
+                        // require('../assets/audios/IshakLong.wav'),
                         { isLooping: true }
                     );
-                    soundRef.current = sound;
+                    soundRefDistance.current = sound;
                     await sound.setRateAsync(rate, true);
                     await sound.playAsync();
                 } else {
                     if (currentRate !== rate) {
-                        await soundRef.current.setRateAsync(rate, true);
+                        await soundRefDistance.current.setRateAsync(rate, true);
                         setCurrentRate(rate);
                     }
                 }
@@ -56,18 +56,18 @@ const RadarScreen = () => {
         } else if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
             playSound(1); // Jouer normalement si distance entre 5 et 15 cm
         } else {
-            if (soundRef.current) {
-                soundRef.current.stopAsync();
-                soundRef.current.unloadAsync();
-                soundRef.current = null;
+            if (soundRefDistance.current) {
+                soundRefDistance.current.stopAsync();
+                soundRefDistance.current.unloadAsync();
+                soundRefDistance.current = null;
             }
         }
 
         return () => {
-            if (soundRef.current) {
-                soundRef.current.stopAsync();
-                soundRef.current.unloadAsync();
-                soundRef.current = null;
+            if (soundRefDistance.current) {
+                soundRefDistance.current.stopAsync();
+                soundRefDistance.current.unloadAsync();
+                soundRefDistance.current = null;
             }
         };
     }, [mqttState.frontDistance, mqttState.backDistance]);
@@ -86,47 +86,83 @@ const RadarScreen = () => {
     const [clignotantDroit, setClignotantDroit] = useState(false);
     const [clignotantGauche, setClignotantGauche] = useState(false);
     const [isBlinking, setIsBlinking] = useState(false);
+    const soundRefCligno = useRef(null);
 
-    // 
     const onLeftPress = () => {
+        const newState = !clignotantGauche;
         setClignotantDroit(false); // Désactive le droit si actif
-        setClignotantGauche(!clignotantGauche); // Toggle le gauche
-        console.log('Clignotant gauche:', !clignotantGauche ? 'activé' : 'désactivé');
+        setClignotantGauche(newState); // Toggle le gauche
+
+        // Publish MQTT message based on new state
+        if (newState) {
+            client.publish("13a20041642063/ledG", "1");
+            console.log('MQTT: Left turn signal ON - Published "1" to 13a20041642063/ledG');
+        } else {
+            client.publish("13a20041642063/ledG", "0");
+            console.log('MQTT: Left turn signal OFF - Published "0" to 13a20041642063/ledG');
+        }
+        console.log('Clignotant gauche:', newState ? 'activé' : 'désactivé');
     };
 
     const onRightPress = () => {
+        const newState = !clignotantDroit;
         setClignotantGauche(false); // Désactive le gauche si actif
-        setClignotantDroit(!clignotantDroit); // Toggle le droit
-        console.log('Clignotant droit:', !clignotantDroit ? 'activé' : 'désactivé');
+        setClignotantDroit(newState); // Toggle le droit
+
+        // Publish MQTT message based on new state
+        if (newState) {
+            client.publish("13a20041642063/ledD", "1");
+            console.log('MQTT: Right turn signal ON - Published "1" to 13a20041642063/ledD');
+        } else {
+            client.publish("13a20041642063/ledD", "0");
+            console.log('MQTT: Right turn signal OFF - Published "0" to 13a20041642063/ledD');
+        }
+        console.log('Clignotant droit:', newState ? 'activé' : 'désactivé');
     };
 
-    // Lancement du bruit lors du clic du clignotant droit
-    // Effet pour gérer le clignotement et le son
     useEffect(() => {
         let interval;
+        const playSound = async () => {
+            try {
+                if (!soundRefCligno.current) {
+                    const { sound } = await Audio.Sound.createAsync(
+                        require('../assets/audios/clignotant.wav')
+                    );
+                    soundRefCligno.current = sound;
+                }
+                await soundRefCligno.current.replayAsync();
+            } catch (error) {
+                console.log('Failed to play sound', error);
+            }
+        };
+
         if (clignotantDroit || clignotantGauche) {
             interval = setInterval(() => {
                 setIsBlinking(prev => !prev);
-                console.log('ISHAK'); // Ajout du son ici
-            }, 500);
+                playSound();
+            }, 450); // Intervalle de clignotement
+        } else {
+            clearInterval(interval);
+            setIsBlinking(false);
         }
+
         return () => {
-            if (interval) {
-                clearInterval(interval);
-                setIsBlinking(false);
+            clearInterval(interval);
+            if (soundRefCligno.current) {
+                soundRefCligno.current.unloadAsync();
+                soundRefCligno.current = null;
             }
         };
     }, [clignotantDroit, clignotantGauche]);
 
-    // Supprimez l'autre useEffect pour le son car nous l'avons intégré ci-dessus
 
-    // Modifiez la fonction getArrowColor pour utiliser un vert foncé quand actif
-    const getArrowColor = (side) => {
-        if ((side === 'left' && clignotantGauche) || (side === 'right' && clignotantDroit)) {
-            return isBlinking ? '#004d00' : '#00ff00'; // Alterne entre vert foncé et vert clair
-        }
-        return 'black';
-    };
+    // // Activation du son lorsque clic sur le clignotant
+    // const getArrowColor = (side) => {
+    //     if ((side === 'left' && clignotantGauche) || (side === 'right' && clignotantDroit)) {
+    //         return isBlinking ? '#004d00' : '#00ff00'; // Alterne entre vert foncé et vert clair
+    //     }
+    //     return 'black';
+    // };
 
     useEffect(() => {
         if (pression > 0) {
@@ -150,7 +186,7 @@ const RadarScreen = () => {
         } else if (mqttState.frontDistance < 30 || mqttState.backDistance < 30) {
             return 'yellow';
         } else {
-            return 'green';
+            return 'white';
         }
     };
 
@@ -164,7 +200,7 @@ const RadarScreen = () => {
                     <TouchableOpacity onPress={onLeftPress}>
                         <MaterialCommunityIcons
                             name="arrow-left-circle"
-                            color={getArrowColor('left')}
+                            color={clignotantGauche === 'left' ? 'green' : color}
                             size={size}
                             style={styles.arrowLeft}
                         />
@@ -175,7 +211,7 @@ const RadarScreen = () => {
                     <TouchableOpacity onPress={onRightPress}>
                         <MaterialCommunityIcons
                             name="arrow-right-circle"
-                            color={getArrowColor('right')}
+                            color={clignotantDroit === 'right' ? 'green' : color}
                             size={size}
                             style={styles.arrowRight}
                         />
