@@ -46,7 +46,7 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.pageTitle}>{`Bienvenue ${user.username}, ${user.role}`}</Text>
 
                 {user?.role === "gerant" ? (
-                    <Text style={styles.text}>{`${user.username} s'est pris un obstacle à HEURE`}</Text>
+                    <Text style={styles.text}>Yanis s'est pris un obstacle à HEURE</Text>
                 ) : user?.role === "patient" ? (
                     <View style={styles.squareContainer}>
                             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
