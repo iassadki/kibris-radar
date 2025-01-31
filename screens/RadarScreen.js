@@ -34,7 +34,7 @@ const RadarScreen = () => {
             try {
                 if (!soundRefDistance.current) {
                     const { sound } = await Audio.Sound.createAsync(
-                        // require('../assets/audios/IshakLong.wav'),
+                        require('../assets/audios/IshakLong.wav'),
                         { isLooping: true }
                     );
                     soundRefDistance.current = sound;
@@ -51,9 +51,9 @@ const RadarScreen = () => {
             }
         };
 
-        if (mqttState.frontDistance < 5 || mqttState.backDistance < 5) {
+        if (mqttState.frontDistance < 3 || mqttState.backDistance < 3) {
             playSound(2); // Jouer en accéléré si distance < 5 cm
-        } else if (mqttState.frontDistance < 15 || mqttState.backDistance < 15) {
+        } else if (mqttState.frontDistance < 8 || mqttState.backDistance < 8) {
             playSound(1); // Jouer normalement si distance entre 5 et 15 cm
         } else {
             if (soundRefDistance.current) {

@@ -2,7 +2,7 @@
 - [x] Bruit selon distance
 - [x] Bruit des clignotants en console
 - [x] Bruit des clignotants en audio
+- [x] Bruits clignotants, et animations
 - [ ] Gérer une array de un seul fauteuil pour l'instant
-- [ ] Bruits clignotants, et animations
 - [ ] Gérer les listes de fauteuils, avec les deux capteurs de pression différents
 - [ ] Gérer les undefined
