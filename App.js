@@ -1,24 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import HomeScreen from './screens/HomeScreen.js';
+import LoginScreen from './screens/LoginScreen.js';
 import ProfileScreen from './screens/ProfileScreen.js';
 import RadarScreen from './screens/RadarScreen.js';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import client from './backend/receive.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const HomeScreenNavigator = () => {
-
+const MainNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: 'white',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: { backgroundColor: '#000', borderTopWidth: 0 },
+        headerShown: false,
       }}
     >
       <Tab.Screen
@@ -28,7 +30,6 @@ const HomeScreenNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -38,7 +39,6 @@ const HomeScreenNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="radar" color={color} size={size} />
           ),
-          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -48,7 +48,6 @@ const HomeScreenNavigator = () => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account" color={color} size={size} />
           ),
-          headerShown: false,
         }}
       />
     </Tab.Navigator>
@@ -56,35 +55,39 @@ const HomeScreenNavigator = () => {
 };
 
 export default function App() {
-  return (
-      <SafeAreaView style={styles.safeArea}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="HomeScreen" // Changer le nom de l'écran initial si nécessaire
-            screenOptions={{
-              headerShown: false, // Cacher l'en-tête pour tous les écrans par défaut
-              headerStyle: { backgroundColor: '#fff' },
-              headerTintColor: '#000',
-            }}
-          >
-            <Stack.Screen
-              name="HomeScreen" // Renommer l'écran "Home" en "HomeScreen"
-              component={HomeScreenNavigator}
-            />
-            <Stack.Screen
-              name="RadarScreen"
-              component={RadarScreen}
-              options={{ headerShown: false }} // Cacher l'en-tête pour l'écran RadarScreen
-            />
-            <Stack.Screen
-              name="ProfileScreen"
-              component={ProfileScreen}
-              options={{ headerShown: false }} // Cacher l'en-tête pour l'écran ProfileScreen
-            />
-          </Stack.Navigator>
+  useEffect(() => {
+    if (client.isConnected()) {
+      console.log("MQTT est prêt !");
+    }
+  }, []);
 
-        </NavigationContainer>
-      </SafeAreaView>
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            headerStyle: { backgroundColor: '#000' },
+            headerTintColor: '#fff',
+            headerTitleAlign: 'center',
+          }}
+        >
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={MainNavigator}
+            options={{
+              title: "Kıbrıs Radar",
+              headerLeft: null // Empêche le retour à la page login
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
 
