@@ -107,7 +107,7 @@ const RadarScreen = () => {
         if (clignotantDroit || clignotantGauche) {
             interval = setInterval(() => {
                 setIsBlinking(prev => !prev);
-                console.log('YANIS'); // Ajout du son ici
+                console.log('ISHAK'); // Ajout du son ici
             }, 500);
         }
         return () => {
