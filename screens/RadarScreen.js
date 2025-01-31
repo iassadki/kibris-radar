@@ -101,22 +101,29 @@ const RadarScreen = () => {
     };
 
     // Lancement du bruit lors du clic du clignotant droit
+    // Effet pour gérer le clignotement et le son
     useEffect(() => {
         let interval;
         if (clignotantDroit || clignotantGauche) {
             interval = setInterval(() => {
                 setIsBlinking(prev => !prev);
+                console.log('YANIS'); // Ajout du son ici
             }, 500);
         }
         return () => {
-            if (interval) clearInterval(interval);
-            setIsBlinking(false);
+            if (interval) {
+                clearInterval(interval);
+                setIsBlinking(false);
+            }
         };
     }, [clignotantDroit, clignotantGauche]);
 
+    // Supprimez l'autre useEffect pour le son car nous l'avons intégré ci-dessus
+
+    // Modifiez la fonction getArrowColor pour utiliser un vert foncé quand actif
     const getArrowColor = (side) => {
         if ((side === 'left' && clignotantGauche) || (side === 'right' && clignotantDroit)) {
-            return isBlinking ? '#004d00' : '#00ff00'; // Vert foncé / Vert clair
+            return isBlinking ? '#004d00' : '#00ff00'; // Alterne entre vert foncé et vert clair
         }
         return 'black';
     };
@@ -129,7 +136,7 @@ const RadarScreen = () => {
         }
     }, [pression]);
 
-    
+
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
 
