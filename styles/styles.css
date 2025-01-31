@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    flex: 1;
+    background-color: #FFFFFF;
+    padding: 10px;
+}
+
+.pageTitle {
+    margin-top: 40px;
+    margin-left: 10px;
+    font-size: 25px;
+    font-weight: bold;
+    margin-vertical: 10px;
+    color: black;
+}
+
+.text {
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-vertical: 10px;
+    color: black;
+}
