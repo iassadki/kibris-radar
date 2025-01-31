@@ -7,11 +7,10 @@ var C = xbee_api.constants;
 
 // 📌 Chargement des variables d'environnement
 const SERIAL_PORT = process.env.SERIAL_PORT;
-const SERIAL_PORT_ARDUINO = process.env.SERIAL_PORT_ARDUINO;
 const MQTT_BROKER_URL = process.env.MQTT_BROKER_URL;
 const MQTT_TOPIC_DATA = process.env.MQTT_TOPIC + "/data";
-const MQTT_TOPIC_LED1 = process.env.MQTT_TOPIC + "/led1";
-const MQTT_TOPIC_LED2 = process.env.MQTT_TOPIC + "/led2";
+const MQTT_TOPIC_LED_G = process.env.MQTT_TOPIC + "/ledG";
+const MQTT_TOPIC_LED_D = process.env.MQTT_TOPIC + "/ledD";
 const BAUDRATE = parseInt(process.env.SERIAL_BAUDRATE) || 9600;
 
 if (!SERIAL_PORT || !MQTT_BROKER_URL || !process.env.MQTT_TOPIC) {
@@ -29,11 +28,6 @@ let serialport = new SerialPort({
   baudRate: BAUDRATE,
 });
 
-let arduino = new SerialPort({
-  path: SERIAL_PORT_ARDUINO,
-  baudRate: BAUDRATE,
-});
-
 serialport.pipe(xbeeAPI.parser);
 xbeeAPI.builder.pipe(serialport);
 
@@ -43,11 +37,11 @@ const mqttClient = mqtt.connect(MQTT_BROKER_URL);
 mqttClient.on('connect', function () {
   console.log(`✅ Connecté à MQTT Broker: ${MQTT_BROKER_URL}`);
   // Abonnement aux topics des LEDs
-  mqttClient.subscribe([MQTT_TOPIC_LED1, MQTT_TOPIC_LED2, MQTT_TOPIC_DATA], function (err) {
+  mqttClient.subscribe([MQTT_TOPIC_LED_G, MQTT_TOPIC_LED_D, MQTT_TOPIC_DATA], function (err) {
     if (err) {
       console.error('❌ Erreur abonnement MQTT:', err);
     } else {
-      console.log(`📡 Abonné aux topics: ${MQTT_TOPIC_LED1} et ${MQTT_TOPIC_LED2}`);
+      console.log(`📡 Abonné aux topics: ${MQTT_TOPIC_LED_G} et ${MQTT_TOPIC_LED_D}`);
     }
   });
 });
@@ -58,10 +52,10 @@ mqttClient.on('message', function (topic, message) {
   
   if (finalCommand === "1" || finalCommand === "0") {
     // Ajouter l'identifiant de la LED en fonction du topic
-    let ledIdentifier = topic === MQTT_TOPIC_LED1 ? "1:" : "2:";
+    let ledIdentifier = topic === MQTT_TOPIC_LED_G ? "1:" : "2:";
     finalCommand = ledIdentifier + finalCommand;
     
-    console.log(`📤 Tentative d'envoi sur le port série: ${SERIAL_PORT_ARDUINO}`);
+    console.log(`📤 Tentative d'envoi sur le port série: ${SERIAL_PORT}`);
     console.log(`📝 Commande à envoyer: "${finalCommand}\r\n"`);
     
     // Vérifier si le port est ouvert
