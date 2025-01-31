@@ -43,9 +43,9 @@ const HomeScreen = () => {
                 setPression(mqttState.pression);
                 console.log('Updated PRESSURE:', mqttState.pression);
             }
-        }, 500); // 500 ms = 0.5 secondes
+        }, 1000); 
 
-        return () => clearInterval(interval); // Nettoyage de l'intervalle à la destruction du composant
+        return () => clearInterval(interval);
     }, [mqttState]);
 
     // Render only if user is available

@@ -12,11 +12,10 @@ const RadarScreen = () => {
 
     // Récupérations de valeurs depuis le backend
     const [status, setStatus] = useState('');
-    const [frontDistance, setFrontDistance] = useState('');
-    const [backDistance, setBackDistance] = useState('');
-    const [pression, setPression] = useState('');
+    const [frontDistance, setFrontDistance] = useState(0);
+    const [backDistance, setBackDistance] = useState(0);
     const soundRefDistance = useRef(null); // Référence pour stocker l'objet son
-    const [currentRate, setCurrentRate] = useState(1); // État pour suivre la vitesse actuelle du son
+    const [currentRate, setCurrentRate] = useState(1); // Vitesse actuelle du son
 
 
     // Statut de la connexion MQTT
@@ -146,14 +145,6 @@ const RadarScreen = () => {
     }, [clignotantDroit, clignotantGauche]);
 
 
-    // // Activation du son lorsque clic sur le clignotant
-    // const getArrowColor = (side) => {
-    //     if ((side === 'left' && clignotantGauche) || (side === 'right' && clignotantDroit)) {
-    //         return isBlinking ? '#004d00' : '#00ff00'; // Alterne entre vert foncé et vert clair
-    //     }
-    //     return 'black';
-    // };
-
     const [frontDistancesList, setFrontDistancesList] = useState([0, 5, 15, 30]);
     const [backDistancesList, setBackDistancesList] = useState([0, 5, 15, 30]);
 
@@ -167,9 +158,18 @@ const RadarScreen = () => {
         } else if (mqttState.frontDistance < 30 || mqttState.backDistance < 30) {
             return 'yellow';
         } else {
-            return 'white';
+            return 'green';
         }
     };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFrontDistance(mqttState.frontDistance);
+            setBackDistance(mqttState.backDistance);
+        }, 500); // Rafraîchit les données toutes les 500ms
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <View style={[styles.container, { backgroundColor: getBackgroundColor() }]}>
